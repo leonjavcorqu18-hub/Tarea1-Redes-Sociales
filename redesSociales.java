@@ -22,8 +22,6 @@ public class redesSociales {
         String linea;
         while ((linea = br.readLine()) != null) {
             if (linea.trim().isEmpty()) continue;
-            
-            // Parsing más robusto para manejar números con comas
             List<String> campos = new ArrayList<>();
             StringBuilder campoActual = new StringBuilder();
             boolean dentroDeComillas = false;
@@ -39,16 +37,16 @@ public class redesSociales {
                     campoActual.append(c);
                 }
             }
-            campos.add(campoActual.toString().trim()); // Agregar el último campo
+            campos.add(campoActual.toString().trim());
             
-            if (campos.size() < 3) continue; // Necesitamos al menos red, concepto, año
+            if (campos.size() < 3) continue;
             
             Registro r = new Registro();
             r.redSocial = campos.get(0);
             r.concepto = campos.get(1);
             r.año = Integer.parseInt(campos.get(2));
             
-            // Procesar los meses
+            // Procesar los meses (casi no entendí esto)
             for (int i = 3; i < Math.min(campos.size(), columnas.length); i++) {
                 String valor = (!campos.get(i).isEmpty()) ? campos.get(i) : "0";
                 r.meses.put(columnas[i].trim().toUpperCase(), valor);
@@ -62,7 +60,6 @@ public class redesSociales {
     // Diferencia de seguidores en Twitter entre enero y junio
     public static void diferenciaSeguidoresTwitter(List<Registro> registros) {
         for (Registro r : registros) {
-            // Corregido: coincidencia exacta con el CSV
             if (r.redSocial.equalsIgnoreCase("TWITTER") && r.concepto.equalsIgnoreCase("SEGUIDORES (FOLLOWERS)")) {
                 double enero = parseNumero(r.meses.getOrDefault("ENERO", "0"));
                 double junio = parseNumero(r.meses.getOrDefault("JUNIO", "0"));
@@ -70,10 +67,9 @@ public class redesSociales {
                 return;
             }
         }
-        System.out.println("\n► No se encontró la fila de seguidores de Twitter en el archivo.");
     }
 
-    // Diferencia de visualizaciones de YouTube entre dos meses seleccionados
+    // Diferencia de visualizaciones de YouTube entre dos meses
     public static void diferenciaVisualizacionesYoutube(List<Registro> registros, String mes1, String mes2) {
         for (Registro r : registros) {
             if (r.redSocial.equalsIgnoreCase("YOUTUBE") && r.concepto.equalsIgnoreCase("VISUALIZACIONES")) {
@@ -83,10 +79,9 @@ public class redesSociales {
                 return;
             }
         }
-        System.out.println("\n► No se encontró la fila de visualizaciones de YouTube en el archivo.");
     }
 
-    // Promedio de crecimiento mensual de TWITTER
+    // Promedio de crecimiento mensual de Twitter
     public static void promedioCrecimientoTwitter(List<Registro> registros) {
         for (Registro r : registros) {
             if (r.redSocial.equalsIgnoreCase("TWITTER") && r.concepto.equalsIgnoreCase("CRECIMIENTO DE FOLLOWERS")) {
@@ -95,7 +90,7 @@ public class redesSociales {
                 int cuenta = 0;
                 for (String mes : meses) {
                     double valor = parseNumero(r.meses.getOrDefault(mes, "0"));
-                    if (valor != 0) { // Solo contar valores no cero
+                    if (valor != 0) {
                         suma += valor;
                         cuenta++;
                     }
@@ -105,10 +100,9 @@ public class redesSociales {
                 return;
             }
         }
-        System.out.println("\n► No se encontró la fila de crecimiento de Twitter en el archivo.");
     }
 
-    // Promedio de crecimiento mensual de FACEBOOK
+    // Promedio de crecimiento mensual de Facebook
     public static void promedioCrecimientoFacebook(List<Registro> registros) {
         for (Registro r : registros) {
             if (r.redSocial.equalsIgnoreCase("FACEBOOK") && r.concepto.equalsIgnoreCase("CRECIMIENTO (seguidores)")) {
@@ -117,7 +111,7 @@ public class redesSociales {
                 int cuenta = 0;
                 for (String mes : meses) {
                     double valor = parseNumero(r.meses.getOrDefault(mes, "0"));
-                    if (valor != 0) { // Solo contar valores no cero
+                    if (valor != 0) {
                         suma += valor;
                         cuenta++;
                     }
@@ -127,10 +121,9 @@ public class redesSociales {
                 return;
             }
         }
-        System.out.println("\n► No se encontró la fila de crecimiento de Facebook en el archivo.");
     }
 
-    // Promedio de "Me gusta" de YouTube, Twitter y Facebook (enero a junio)
+    // Promedio de "Me gusta" entre YouTube, Twitter y Facebook
     public static void promedioMeGusta(List<Registro> registros) {
         String[] meses = {"ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO"};
         double total = 0;
@@ -152,14 +145,9 @@ public class redesSociales {
         double promedio = count == 0 ? 0 : total / count;
         System.out.println("\n 5) Promedio de 'Me gusta' entre YouTube, Twitter y Facebook (enero-junio): " + promedio);
     }
-
-    // Método corregido para parsing de números
     public static double parseNumero(String valor) {
         if (valor == null || valor.trim().isEmpty()) return 0;
-        
-        // Remover comas como separadores de miles y espacios
-        valor = valor.trim().replace(",", "");
-        
+        valor = valor.trim().replace(",", "");        
         try {
             return Double.parseDouble(valor);
         } catch (NumberFormatException e) {
@@ -174,11 +162,11 @@ public class redesSociales {
         // 1. Diferencia de seguidores en Twitter entre enero y junio
         diferenciaSeguidoresTwitter(registros);
 
-        // 2. Diferencia de visualizaciones de YouTube entre dos meses (ingresados por teclado)
+        // 2. Diferencia de visualizaciones de YouTube entre dos meses
         Scanner sc = new Scanner(System.in);
-        System.out.print("\nIngrese un mes (enero-junio): ");
+        System.out.print("\n  Ingrese un mes (enero-junio): ");
         String mes1 = sc.nextLine();
-        System.out.print("Ingrese el segundo mes (enero-junio): ");
+        System.out.print("  Ingrese el segundo mes (enero-junio): ");
         String mes2 = sc.nextLine();
         diferenciaVisualizacionesYoutube(registros, mes1, mes2);
 
